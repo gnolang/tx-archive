@@ -4,11 +4,10 @@ package backup
 import (
 	"context"
 	"fmt"
-	"io"
 	"time"
 
-	"github.com/gnolang/gno/tm2/pkg/amino"
 	"github.com/gnolang/tx-archive/backup/client"
+	"github.com/gnolang/tx-archive/backup/writer"
 	"github.com/gnolang/tx-archive/log"
 	"github.com/gnolang/tx-archive/log/noop"
 	"github.com/gnolang/tx-archive/types"
@@ -19,14 +18,14 @@ import (
 // Service is the chain backup service
 type Service struct {
 	client client.Client
-	writer io.Writer
+	writer writer.Writer
 	logger log.Logger
 
 	watchInterval time.Duration // interval for the watch routine
 }
 
 // NewService creates a new backup service
-func NewService(client client.Client, writer io.Writer, opts ...Option) *Service {
+func NewService(client client.Client, writer writer.Writer, opts ...Option) *Service {
 	s := &Service{
 		client:        client,
 		writer:        writer,
@@ -76,7 +75,7 @@ func (s *Service) ExecuteBackup(ctx context.Context, cfg Config) error {
 			}
 
 			// Write the tx data to the file
-			if writeErr := writeTxData(s.writer, data); writeErr != nil {
+			if writeErr := s.writer.WriteTxData(data); writeErr != nil {
 				return fmt.Errorf("unable to write tx data, %w", writeErr)
 			}
 
@@ -169,27 +168,4 @@ func determineRightBound(
 
 	// Requested right bound is not valid, use the latest block number
 	return latestBlockNumber, nil
-}
-
-// writeTxData outputs the tx data to the writer
-func writeTxData(writer io.Writer, txData *types.TxData) error {
-	// Marshal tx data into JSON
-	jsonData, err := amino.MarshalJSON(txData)
-	if err != nil {
-		return fmt.Errorf("unable to marshal JSON data, %w", err)
-	}
-
-	// Write the JSON data as a line to the file
-	_, err = writer.Write(jsonData)
-	if err != nil {
-		return fmt.Errorf("unable to write to output, %w", err)
-	}
-
-	// Write a newline character to separate JSON objects
-	_, err = writer.Write([]byte("\n"))
-	if err != nil {
-		return fmt.Errorf("unable to write newline output, %w", err)
-	}
-
-	return nil
 }

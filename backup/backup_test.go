@@ -10,6 +10,7 @@ import (
 
 	"github.com/gnolang/gno/tm2/pkg/amino"
 	"github.com/gnolang/gno/tm2/pkg/std"
+	"github.com/gnolang/tx-archive/backup/writer/standard"
 	"github.com/gnolang/tx-archive/log/noop"
 	"github.com/gnolang/tx-archive/types"
 	"github.com/stretchr/testify/assert"
@@ -120,7 +121,7 @@ func TestBackup_ExecuteBackup_FixedRange(t *testing.T) {
 	cfg.FromBlock = fromBlock
 	cfg.ToBlock = &toBlock
 
-	s := NewService(mockClient, tempFile, WithLogger(noop.New()))
+	s := NewService(mockClient, standard.NewWriter(tempFile), WithLogger(noop.New()))
 
 	// Run the backup procedure
 	require.NoError(
@@ -213,7 +214,7 @@ func TestBackup_ExecuteBackup_Watch(t *testing.T) {
 	cfg.ToBlock = &requestToBlock
 	cfg.Watch = true
 
-	s := NewService(mockClient, tempFile, WithLogger(noop.New()))
+	s := NewService(mockClient, standard.NewWriter(tempFile), WithLogger(noop.New()))
 	s.watchInterval = 10 * time.Millisecond // make the interval almost instant for the test
 
 	// Run the backup procedure
