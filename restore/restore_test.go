@@ -3,6 +3,7 @@ package restore
 import (
 	"context"
 	"io"
+	"sync/atomic"
 	"testing"
 	"time"
 
@@ -70,7 +71,7 @@ func TestRestore_ExecuteRestore_Watch(t *testing.T) {
 		exampleTxCount = 20
 		exampleTxGiven = 0
 
-		simulateEOF = false
+		simulateEOF atomic.Bool
 
 		exampleTx = &std.Tx{
 			Memo: "example tx",
@@ -87,7 +88,7 @@ func TestRestore_ExecuteRestore_Watch(t *testing.T) {
 		}
 		mockSource = &mockSource{
 			nextFn: func(ctx context.Context) (*std.Tx, error) {
-				if simulateEOF {
+				if simulateEOF.Load() {
 					return nil, io.EOF
 				}
 
@@ -96,12 +97,12 @@ func TestRestore_ExecuteRestore_Watch(t *testing.T) {
 				if exampleTxGiven == exampleTxCount/2 {
 					// Simulate EOF, but after some time
 					// make sure the Next call returns an actual transaction
-					simulateEOF = true
+					simulateEOF.Store(true)
 
 					time.AfterFunc(
 						50*time.Millisecond,
 						func() {
-							simulateEOF = false
+							simulateEOF.Store(false)
 						},
 					)
 
