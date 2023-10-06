@@ -36,6 +36,7 @@ type backupCfg struct {
 	fromBlock uint64
 
 	overwrite bool
+	watch     bool
 }
 
 // newBackupCmd creates the backup command
@@ -90,6 +91,13 @@ func (c *backupCfg) registerFlags(fs *flag.FlagSet) {
 		false,
 		"flag indicating if the output file should be overwritten during backup",
 	)
+
+	fs.BoolVar(
+		&c.watch,
+		"watch",
+		false,
+		"flag indicating if the backup should append incoming tx data",
+	)
 }
 
 // exec executes the backup command
@@ -113,6 +121,7 @@ func (c *backupCfg) exec(ctx context.Context, _ []string) error {
 	// Set up the config
 	cfg := backup.DefaultConfig()
 	cfg.FromBlock = c.fromBlock
+	cfg.Watch = c.watch
 
 	if c.toBlock >= 0 {
 		to64 := uint64(c.toBlock)

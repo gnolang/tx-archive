@@ -88,7 +88,7 @@ func (s *Service) ExecuteBackup(ctx context.Context, cfg Config) error {
 	for block := cfg.FromBlock; block <= toBlock; block++ {
 		select {
 		case <-ctx.Done():
-			s.logger.Info("export procedure stopped")
+			s.logger.Info("backup procedure stopped")
 
 			return nil
 		default:
