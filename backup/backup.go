@@ -54,6 +54,9 @@ func (s *Service) ExecuteBackup(ctx context.Context, cfg Config) error {
 		return fmt.Errorf("unable to determine right bound, %w", boundErr)
 	}
 
+	// Keep track of total txs backed up
+	totalTxs := uint64(0)
+
 	fetchAndWrite := func(block uint64) error {
 		txs, txErr := s.client.GetBlockTransactions(block)
 		if txErr != nil {
@@ -76,10 +79,15 @@ func (s *Service) ExecuteBackup(ctx context.Context, cfg Config) error {
 			if writeErr := writeTxData(s.writer, data); writeErr != nil {
 				return fmt.Errorf("unable to write tx data, %w", writeErr)
 			}
-		}
 
-		// Log the progress
-		logProgress(s.logger, cfg.FromBlock, toBlock, block)
+			totalTxs++
+
+			// Log the progress
+			s.logger.Info(
+				"Transaction backed up",
+				"total", totalTxs,
+			)
+		}
 
 		return nil
 	}
@@ -184,18 +192,4 @@ func writeTxData(writer io.Writer, txData *types.TxData) error {
 	}
 
 	return nil
-}
-
-// logProgress logs the backup progress
-func logProgress(logger log.Logger, from, to, current uint64) {
-	total := to - from
-	status := (float64(current) - float64(from)) / float64(total) * 100
-
-	logger.Info(
-		fmt.Sprintf("Total of %d blocks backed up", current-from+1),
-		"total", total+1,
-		"from", from,
-		"to", to,
-		"status", fmt.Sprintf("%.2f%%", status),
-	)
 }
