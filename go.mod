@@ -10,8 +10,7 @@ require (
 )
 
 require (
-	github.com/btcsuite/btcd v0.22.0-beta.0.20220111032746-97732e52810c // indirect
-	github.com/btcsuite/btcd/btcutil v1.0.0 // indirect
+	github.com/btcsuite/btcd/btcutil v1.1.0 // indirect
 	github.com/cespare/xxhash v1.1.0 // indirect
 	github.com/cespare/xxhash/v2 v2.1.1 // indirect
 	github.com/cockroachdb/apd v1.1.0 // indirect
