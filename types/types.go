@@ -6,5 +6,5 @@ import "github.com/gnolang/gno/tm2/pkg/std"
 // along with the block information
 type TxData struct {
 	Tx       std.Tx `json:"tx"`
-	BlockNum uint64 `json:"blockNum"`
+	Ctx      sdk.Context `json:"ctx"`
 }
