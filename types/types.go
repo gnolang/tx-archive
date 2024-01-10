@@ -1,6 +1,9 @@
 package types
 
-import "github.com/gnolang/gno/tm2/pkg/std"
+import (
+	"github.com/gnolang/gno/tm2/pkg/sdk"
+)	"github.com/gnolang/gno/tm2/pkg/std"
+
 
 // TxData contains the single block transaction,
 // along with the block information
