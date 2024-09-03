@@ -1,10 +1,12 @@
 package backup
 
-import "github.com/gnolang/gno/tm2/pkg/std"
+import (
+	"github.com/gnolang/tx-archive/backup/client"
+)
 
 type (
 	getLatestBlockNumberDelegate func() (uint64, error)
-	getBlockTransactionsDelegate func(uint64) ([]std.Tx, error)
+	getBlockTransactionsDelegate func(uint64) (*client.Block, error)
 )
 
 type mockClient struct {
@@ -20,7 +22,7 @@ func (m *mockClient) GetLatestBlockNumber() (uint64, error) {
 	return 0, nil
 }
 
-func (m *mockClient) GetBlockTransactions(blockNum uint64) ([]std.Tx, error) {
+func (m *mockClient) GetBlockTransactions(blockNum uint64) (*client.Block, error) {
 	if m.getBlockTransactionsFn != nil {
 		return m.getBlockTransactionsFn(blockNum)
 	}
