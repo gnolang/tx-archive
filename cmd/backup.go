@@ -14,6 +14,7 @@ import (
 	"github.com/gnolang/tx-archive/backup/writer/standard"
 	"github.com/peterbourgon/ff/v3/ffcli"
 	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
 )
 
 const (
@@ -44,6 +45,7 @@ type backupCfg struct {
 	overwrite bool
 	legacy    bool
 	watch     bool
+	verbose   bool
 }
 
 // newBackupCmd creates the backup command
@@ -126,6 +128,13 @@ func (c *backupCfg) registerFlags(fs *flag.FlagSet) {
 		false,
 		"flag indicating if the backup should append incoming tx data",
 	)
+
+	fs.BoolVar(
+		&c.verbose,
+		"verbose",
+		false,
+		"flag indicating if the log verbosity should be set to debug level",
+	)
 }
 
 // exec executes the backup command
@@ -173,7 +182,12 @@ func (c *backupCfg) exec(ctx context.Context, _ []string) error {
 	}
 
 	// Set up the logger
-	zapLogger, loggerErr := zap.NewDevelopment()
+	var logOpts []zap.Option
+	if !c.verbose {
+		logOpts = append(logOpts, zap.IncreaseLevel(zapcore.InfoLevel)) // Info instead Debug level
+	}
+
+	zapLogger, loggerErr := zap.NewDevelopment(logOpts...)
 	if loggerErr != nil {
 		return fmt.Errorf("unable to create logger, %w", loggerErr)
 	}
