@@ -21,6 +21,7 @@ type Service struct {
 	writer writer.Writer
 	logger log.Logger
 
+	batchSize     uint
 	watchInterval time.Duration // interval for the watch routine
 }
 
@@ -35,6 +36,11 @@ func NewService(client client.Client, writer writer.Writer, opts ...Option) *Ser
 
 	for _, opt := range opts {
 		opt(s)
+	}
+
+	// Batch size needs to be at least 1
+	if s.batchSize == 0 {
+		s.batchSize = 1
 	}
 
 	return s

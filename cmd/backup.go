@@ -20,6 +20,7 @@ const (
 	defaultOutputPath = "./backup.jsonl"
 	defaultFromBlock  = 1
 	defaultToBlock    = -1 // no limit
+	defaultBatchSize  = 1  // no batch / fetch one by one
 
 	defaultRemoteAddress = "http://127.0.0.1:26657"
 )
@@ -37,6 +38,7 @@ type backupCfg struct {
 
 	toBlock   int64 // < 0 means there is no right bound
 	fromBlock uint64
+	batchSize uint
 
 	ws        bool
 	overwrite bool
@@ -95,6 +97,13 @@ func (c *backupCfg) registerFlags(fs *flag.FlagSet) {
 		"from-block",
 		defaultFromBlock,
 		"the starting block number for the backup (inclusive)",
+	)
+
+	fs.UintVar(
+		&c.batchSize,
+		"batch",
+		defaultBatchSize,
+		"the number of RPC requests to batch. If <2, requests will not be batched",
 	)
 
 	fs.BoolVar(
@@ -216,6 +225,7 @@ func (c *backupCfg) exec(ctx context.Context, _ []string) error {
 		client,
 		w,
 		backup.WithLogger(logger),
+		backup.WithBatchSize(c.batchSize),
 	)
 
 	// Run the backup service
