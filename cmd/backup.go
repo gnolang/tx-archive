@@ -8,7 +8,7 @@ import (
 	"os"
 
 	"github.com/gnolang/tx-archive/backup"
-	"github.com/gnolang/tx-archive/backup/client/http"
+	"github.com/gnolang/tx-archive/backup/client/rpc"
 	"github.com/gnolang/tx-archive/backup/writer"
 	"github.com/gnolang/tx-archive/backup/writer/legacy"
 	"github.com/gnolang/tx-archive/backup/writer/standard"
@@ -38,6 +38,7 @@ type backupCfg struct {
 	toBlock   int64 // < 0 means there is no right bound
 	fromBlock uint64
 
+	ws        bool
 	overwrite bool
 	legacy    bool
 	watch     bool
@@ -73,6 +74,13 @@ func (c *backupCfg) registerFlags(fs *flag.FlagSet) {
 		"remote",
 		defaultRemoteAddress,
 		"the JSON-RPC URL of the chain to be backed up",
+	)
+
+	fs.BoolVar(
+		&c.ws,
+		"ws",
+		false,
+		"flag indicating if the WebSocket protocol should be used for RPC",
 	)
 
 	fs.Int64Var(
@@ -139,10 +147,20 @@ func (c *backupCfg) exec(ctx context.Context, _ []string) error {
 		cfg.ToBlock = &to64
 	}
 
-	// Set up the client
-	client, err := http.NewClient(c.remote)
-	if err != nil {
-		return fmt.Errorf("could not create a gno client, %w", err)
+	// Set up the RPC client
+	var (
+		client    *rpc.Client
+		clientErr error
+	)
+
+	if c.ws {
+		client, clientErr = rpc.NewWSClient(c.remote)
+	} else {
+		client, clientErr = rpc.NewHTTPClient(c.remote)
+	}
+
+	if clientErr != nil {
+		return fmt.Errorf("could not create a gno client, %w", clientErr)
 	}
 
 	// Set up the logger

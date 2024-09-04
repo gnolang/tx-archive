@@ -1,4 +1,4 @@
-package http
+package rpc
 
 //nolint:revive // See https://github.com/gnolang/gno/issues/1197
 import (
@@ -14,16 +14,28 @@ import (
 
 var _ client.Client = &Client{}
 
-// Client is the TM2 HTTP client
+// Client is the TM2 RPC client
 type Client struct {
-	client rpcClient.Client
+	client *rpcClient.RPCClient
 }
 
-// NewClient creates a new TM2 HTTP client
-func NewClient(remote string) (*Client, error) {
+// NewHTTPClient creates a new TM2 HTTP RPC client
+func NewHTTPClient(remote string) (*Client, error) {
 	c, err := rpcClient.NewHTTPClient(remote)
 	if err != nil {
 		return nil, fmt.Errorf("unable to create HTTP client, %w", err)
+	}
+
+	return &Client{
+		client: c,
+	}, nil
+}
+
+// NewWSClient creates a new TM2 WebSocket RPC client
+func NewWSClient(remote string) (*Client, error) {
+	c, err := rpcClient.NewWSClient(remote)
+	if err != nil {
+		return nil, fmt.Errorf("unable to create WebSocket client, %w", err)
 	}
 
 	return &Client{
