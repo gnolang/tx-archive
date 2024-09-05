@@ -157,7 +157,6 @@ func TestBackup_ExecuteBackup_FixedRange(t *testing.T) {
 		if err := amino.UnmarshalJSON(scanner.Bytes(), &txData); err != nil {
 			t.Fatalf("unable to unmarshal JSON line, %v", err)
 		}
-		blockTime.Unix()
 		assert.Equal(t, expectedBlock, txData.BlockNum)
 		assert.Equal(t, exampleTx, txData.Tx)
 		assert.Equal(t, blockTime.Add(time.Duration(expectedBlock)*time.Minute).Local(), time.UnixMilli(txData.Timestamp))
