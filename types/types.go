@@ -9,5 +9,5 @@ import (
 type TxData struct {
 	Tx        std.Tx `json:"tx"`
 	BlockNum  uint64 `json:"blockNum"`
-	Timestamp int64  `json:"bt"`
+	Timestamp int64  `json:"bt"` // Timestamp contains the block creation time in unix milliseconds
 }

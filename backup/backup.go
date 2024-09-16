@@ -57,7 +57,7 @@ func (s *Service) ExecuteBackup(ctx context.Context, cfg Config) error {
 	totalTxs := uint64(0)
 
 	fetchAndWrite := func(height uint64) error {
-		block, txErr := s.client.GetBlockTransactions(height)
+		block, txErr := s.client.GetBlock(height)
 		if txErr != nil {
 			return fmt.Errorf("unable to fetch block transactions, %w", txErr)
 		}

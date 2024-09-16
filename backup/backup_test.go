@@ -104,7 +104,7 @@ func TestBackup_ExecuteBackup_FixedRange(t *testing.T) {
 			getLatestBlockNumberFn: func() (uint64, error) {
 				return toBlock, nil
 			},
-			getBlockTransactionsFn: func(blockNum uint64) (*client.Block, error) {
+			getBlockFn: func(blockNum uint64) (*client.Block, error) {
 				// Sanity check
 				if blockNum < fromBlock && blockNum > toBlock {
 					t.Fatal("invalid block number requested")
@@ -197,7 +197,7 @@ func TestBackup_ExecuteBackup_Watch(t *testing.T) {
 			getLatestBlockNumberFn: func() (uint64, error) {
 				return toBlock, nil
 			},
-			getBlockTransactionsFn: func(blockNum uint64) (*client.Block, error) {
+			getBlockFn: func(blockNum uint64) (*client.Block, error) {
 				// Sanity check
 				if blockNum < fromBlock && blockNum > toBlock {
 					t.Fatal("invalid block number requested")

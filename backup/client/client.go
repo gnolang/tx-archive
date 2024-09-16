@@ -9,9 +9,10 @@ type Client interface {
 	// GetLatestBlockNumber returns the latest block height from the chain
 	GetLatestBlockNumber() (uint64, error)
 
-	// GetBlockTransactions returns the transactions contained
-	// within the specified block, if any
-	GetBlockTransactions(uint64) (*Block, error)
+	// GetBlock returns the transactions contained
+	// within the specified block, if any, apart from the block height and
+	// its timestamp in milliseconds.
+	GetBlock(uint64) (*Block, error)
 }
 
 type Block struct {

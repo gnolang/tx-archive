@@ -43,7 +43,7 @@ func (c *Client) GetLatestBlockNumber() (uint64, error) {
 	return uint64(status.SyncInfo.LatestBlockHeight), nil
 }
 
-func (c *Client) GetBlockTransactions(blockNum uint64) (*client.Block, error) {
+func (c *Client) GetBlock(blockNum uint64) (*client.Block, error) {
 	// Fetch the block
 	blockNumInt64 := int64(blockNum)
 
