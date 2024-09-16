@@ -98,7 +98,7 @@ func TestBackup_ExecuteBackup_FixedRange(t *testing.T) {
 
 		cfg = DefaultConfig()
 
-		blockTime = time.Date(1987, 06, 24, 6, 32, 11, 0, time.FixedZone("Europe/Madrid", 0))
+		blockTime = time.Date(1987, 0o6, 24, 6, 32, 11, 0, time.FixedZone("Europe/Madrid", 0))
 
 		mockClient = &mockClient{
 			getLatestBlockNumberFn: func() (uint64, error) {
@@ -157,6 +157,7 @@ func TestBackup_ExecuteBackup_FixedRange(t *testing.T) {
 		if err := amino.UnmarshalJSON(scanner.Bytes(), &txData); err != nil {
 			t.Fatalf("unable to unmarshal JSON line, %v", err)
 		}
+
 		assert.Equal(t, expectedBlock, txData.BlockNum)
 		assert.Equal(t, exampleTx, txData.Tx)
 		assert.Equal(t, blockTime.Add(time.Duration(expectedBlock)*time.Minute).Local(), time.UnixMilli(txData.Timestamp))
@@ -191,7 +192,7 @@ func TestBackup_ExecuteBackup_Watch(t *testing.T) {
 
 		cfg = DefaultConfig()
 
-		blockTime = time.Date(1987, 06, 24, 6, 32, 11, 0, time.FixedZone("Europe/Madrid", 0))
+		blockTime = time.Date(1987, 0o6, 24, 6, 32, 11, 0, time.FixedZone("Europe/Madrid", 0))
 
 		mockClient = &mockClient{
 			getLatestBlockNumberFn: func() (uint64, error) {

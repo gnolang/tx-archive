@@ -16,7 +16,7 @@ type Client interface {
 }
 
 type Block struct {
+	Txs       []std.Tx
 	Height    uint64
 	Timestamp int64
-	Txs       []std.Tx
 }
