@@ -174,7 +174,7 @@ func TestBackup_ExecuteBackup_FixedRange(t *testing.T) {
 
 						return generateBlocks(t, from, to, tCase.txsPerBlock), nil
 					},
-					getTxResultsFn: func(block uint64) ([]*abci.ResponseDeliverTx, error) {
+					getTxResultsFn: func(_ uint64) ([]*abci.ResponseDeliverTx, error) {
 						txs := make([]*abci.ResponseDeliverTx, 0, tCase.txsPerBlock)
 
 						for range tCase.txsPerBlock {
@@ -300,7 +300,7 @@ func TestBackup_ExecuteBackup_Watch(t *testing.T) {
 
 						return generateBlocks(t, from, to, tCase.txsPerBlock), nil
 					},
-					getTxResultsFn: func(block uint64) ([]*abci.ResponseDeliverTx, error) {
+					getTxResultsFn: func(_ uint64) ([]*abci.ResponseDeliverTx, error) {
 						txs := make([]*abci.ResponseDeliverTx, 0, tCase.txsPerBlock)
 
 						for range tCase.txsPerBlock {
