@@ -6,13 +6,13 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/gnolang/gno/gno.land/pkg/gnoland"
 	_ "github.com/gnolang/gno/gno.land/pkg/sdk/vm"
 
 	"github.com/gnolang/tx-archive/backup/client"
 	"github.com/gnolang/tx-archive/backup/writer"
 	"github.com/gnolang/tx-archive/log"
 	"github.com/gnolang/tx-archive/log/noop"
-	"github.com/gnolang/tx-archive/types"
 )
 
 // Service is the chain backup service
@@ -124,10 +124,11 @@ func (s *Service) ExecuteBackup(ctx context.Context, cfg Config) error {
 			for _, block := range blocks {
 				for i, tx := range block.Txs {
 					// Write the tx data to the file
-					txData := &types.TxData{
-						Tx:        tx,
-						BlockNum:  block.Height,
-						Timestamp: block.Timestamp,
+					txData := &gnoland.TxWithMetadata{
+						Tx: tx,
+						Metadata: &gnoland.GnoTxMetadata{
+							Timestamp: block.Timestamp,
+						},
 					}
 
 					if writeErr := s.writer.WriteTxData(txData); writeErr != nil {

@@ -9,6 +9,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/gnolang/gno/gno.land/pkg/gnoland"
 	"github.com/gnolang/gno/tm2/pkg/amino"
 	"github.com/gnolang/gno/tm2/pkg/std"
 	"github.com/stretchr/testify/assert"
@@ -17,7 +18,6 @@ import (
 	"github.com/gnolang/tx-archive/backup/client"
 	"github.com/gnolang/tx-archive/backup/writer/standard"
 	"github.com/gnolang/tx-archive/log/noop"
-	"github.com/gnolang/tx-archive/types"
 )
 
 func TestBackup_DetermineRightBound(t *testing.T) {
@@ -165,7 +165,7 @@ func TestBackup_ExecuteBackup_FixedRange(t *testing.T) {
 					getLatestBlockNumberFn: func() (uint64, error) {
 						return tCase.toBlock, nil
 					},
-					getBlocksFn: func(ctx context.Context, from, to uint64) ([]*client.Block, error) {
+					getBlocksFn: func(_ context.Context, from, to uint64) ([]*client.Block, error) {
 						// Sanity check
 						if from > to {
 							t.Fatal("invalid block number requested")
@@ -207,7 +207,7 @@ func TestBackup_ExecuteBackup_FixedRange(t *testing.T) {
 
 			// Iterate over each line in the file
 			for ; scanner.Scan(); lineCount++ {
-				var txData types.TxData
+				var txData gnoland.TxWithMetadata
 
 				// Unmarshal the JSON data into the Person struct
 				if err := amino.UnmarshalJSON(scanner.Bytes(), &txData); err != nil {
@@ -217,9 +217,12 @@ func TestBackup_ExecuteBackup_FixedRange(t *testing.T) {
 				expectedBlock := tCase.fromBlock + lineCount/tCase.txsPerBlock
 				expectedTx := lineCount % tCase.txsPerBlock
 				expectedTxMemo := generateMemo(expectedBlock, expectedTx)
-				assert.Equal(t, expectedBlock, txData.BlockNum)
 				assert.Equal(t, expectedTxMemo, txData.Tx.Memo)
-				assert.Equal(t, blockTime.Add(time.Duration(expectedBlock)*time.Minute).Local(), time.UnixMilli(txData.Timestamp))
+				assert.Equal(
+					t,
+					blockTime.Add(time.Duration(expectedBlock)*time.Minute).Local(),
+					time.UnixMilli(txData.Metadata.Timestamp),
+				)
 			}
 
 			// Check for errors during scanning
@@ -266,7 +269,7 @@ func TestBackup_ExecuteBackup_Watch(t *testing.T) {
 
 						return latest, nil
 					},
-					getBlocksFn: func(ctx context.Context, from, to uint64) ([]*client.Block, error) {
+					getBlocksFn: func(_ context.Context, from, to uint64) ([]*client.Block, error) {
 						// Sanity check
 						if from > to {
 							t.Fatal("invalid block number requested")
@@ -319,7 +322,7 @@ func TestBackup_ExecuteBackup_Watch(t *testing.T) {
 
 			// Iterate over each line in the file
 			for ; scanner.Scan(); lineCount++ {
-				var txData types.TxData
+				var txData gnoland.TxWithMetadata
 
 				// Unmarshal the JSON data into the Person struct
 				if err := amino.UnmarshalJSON(scanner.Bytes(), &txData); err != nil {
@@ -329,9 +332,12 @@ func TestBackup_ExecuteBackup_Watch(t *testing.T) {
 				expectedBlock := tCase.fromBlock + lineCount/tCase.txsPerBlock
 				expectedTx := lineCount % tCase.txsPerBlock
 				expectedTxMemo := generateMemo(expectedBlock, expectedTx)
-				assert.Equal(t, expectedBlock, txData.BlockNum)
 				assert.Equal(t, expectedTxMemo, txData.Tx.Memo)
-				assert.Equal(t, blockTime.Add(time.Duration(expectedBlock)*time.Minute).Local(), time.UnixMilli(txData.Timestamp))
+				assert.Equal(
+					t,
+					blockTime.Add(time.Duration(expectedBlock)*time.Minute).Local(),
+					time.UnixMilli(txData.Metadata.Timestamp),
+				)
 			}
 
 			// Check for errors during scanning
