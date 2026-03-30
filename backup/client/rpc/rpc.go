@@ -132,6 +132,15 @@ func (c *Client) GetBlocks(ctx context.Context, from, to uint64) ([]*client.Bloc
 	return blocks, nil
 }
 
+func (c *Client) GetChainID() (string, error) {
+	status, err := c.client.Status()
+	if err != nil {
+		return "", fmt.Errorf("unable to fetch chain ID, %w", err)
+	}
+
+	return status.NodeInfo.Network, nil
+}
+
 func (c *Client) GetTxResults(block uint64) ([]*abci.ResponseDeliverTx, error) {
 	block64 := int64(block)
 
