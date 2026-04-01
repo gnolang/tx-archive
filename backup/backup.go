@@ -1,6 +1,5 @@
 package backup
 
-//nolint:revive // See https://github.com/gnolang/gno/issues/1197
 import (
 	"context"
 	"fmt"
