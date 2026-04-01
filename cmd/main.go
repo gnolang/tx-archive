@@ -26,6 +26,7 @@ func main() {
 	cmd.Subcommands = []*ffcli.Command{
 		newBackupCmd(),
 		newRestoreCmd(),
+		newGenesisAssembleCmd(),
 	}
 
 	if err := cmd.ParseAndRun(context.Background(), os.Args[1:]); err != nil {

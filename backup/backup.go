@@ -56,6 +56,12 @@ func (s *Service) ExecuteBackup(ctx context.Context, cfg Config) error {
 		return fmt.Errorf("invalid config, %w", cfgErr)
 	}
 
+	// Fetch the chain ID once at the start
+	chainID, err := s.client.GetChainID()
+	if err != nil {
+		return fmt.Errorf("unable to fetch chain ID, %w", err)
+	}
+
 	// Determine the right bound
 	toBlock, boundErr := determineRightBound(s.client, cfg.ToBlock)
 	if boundErr != nil {
@@ -158,7 +164,9 @@ func (s *Service) ExecuteBackup(ctx context.Context, cfg Config) error {
 					txData := &gnoland.TxWithMetadata{
 						Tx: tx,
 						Metadata: &gnoland.GnoTxMetadata{
-							Timestamp: block.Timestamp,
+							Timestamp:   block.Timestamp,
+							BlockHeight: int64(block.Height),
+							ChainID:     chainID,
 						},
 					}
 

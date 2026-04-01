@@ -18,6 +18,9 @@ type Client interface {
 
 	// GetTxResults returns the block transaction results (if any)
 	GetTxResults(block uint64) ([]*abci.ResponseDeliverTx, error)
+
+	// GetChainID returns the chain ID from the node status
+	GetChainID() (string, error)
 }
 
 type Block struct {
