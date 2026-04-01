@@ -2,10 +2,12 @@ package http
 
 //nolint:revive // See https://github.com/gnolang/gno/issues/1197
 import (
+	"context"
 	"fmt"
 
 	"github.com/gnolang/gno/tm2/pkg/amino"
 	rpcClient "github.com/gnolang/gno/tm2/pkg/bft/rpc/client"
+	"github.com/gnolang/gno/tm2/pkg/bft/types"
 	"github.com/gnolang/gno/tm2/pkg/std"
 
 	_ "github.com/gnolang/gno/gno.land/pkg/sdk/vm"
@@ -38,7 +40,7 @@ func (c *Client) SendTransaction(tx *std.Tx) error {
 	}
 
 	// Broadcast sync
-	_, err = c.client.BroadcastTxSync(aminoTx)
+	_, err = c.client.BroadcastTxSync(context.Background(), types.Tx(aminoTx))
 	if err != nil {
 		return fmt.Errorf(
 			"unable to broadcast sync transaction, %w",
