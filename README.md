@@ -28,12 +28,6 @@ import (
 )
 ```
 
-## Why
-
-Keeping `tx-archive` in lockstep with the tm2 RPC client and `gno.land/pkg/gnoland`
-types (especially the `GnoTxMetadata` struct used for hardfork replay) is much
-simpler when the code lives in the same module.
-
 ## Issues & PRs
 
 Please open them against the monorepo: <https://github.com/gnolang/gno/issues>.
